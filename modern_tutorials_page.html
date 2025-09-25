@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="flavorcraft-navigation.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlavorCraft Tutorials - Learning Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #fafafa;
+            --bg-tertiary: #f5f5f5;
+            --border-subtle: #e5e7eb;
+            --border-default: #d1d5db;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --accent-purple: #6366f1;
+            --accent-purple-hover: #4f46e5;
+            --accent-orange: #f97316;
+            --accent-green: #10b981;
+            --surface-hover: #f9fafb;
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --gradient-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --border-subtle: #222222;
+            --border-default: #333333;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-tertiary: #666666;
+            --surface-hover: #1f1f1f;
+            --gradient-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--accent-purple);
+        }
+
+        .theme-icon {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover .theme-icon {
+            transform: rotate(180deg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px 32px;
+        }
+
+        .back-btn {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .back-btn:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--accent-purple);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        .header-content {
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .page-title {
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: clamp(1rem, 2vw, 1.125rem);
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .section {
+            margin-bottom: 48px;
+            animation: slideInLeft 0.6s ease-out forwards;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 20px 24px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .coming-soon-badge {
+            background-color: var(--accent-orange);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .see-all-btn {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-default);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .see-all-btn:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--accent-purple);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .video-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .video-card:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--accent-purple);
+            transform: translateY(-2px);
+        }
+
+        .video-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.2s ease;
+            z-index: 1;
+        }
+
+        .video-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            height: 180px;
+            background: var(--gradient-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-thumbnail::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background-color: var(--bg-primary);
+            border: 2px solid var(--border-default);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-thumbnail::after {
+            content: '▶';
+            position: absolute;
+            top: 50%;
+            left: 52%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: var(--accent-purple);
+            z-index: 1;
+        }
+
+        .video-info {
+            padding: 20px;
+        }
+
+        .video-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .video-duration {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        .video-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            margin-top: 8px;
+        }
+
+        .premium-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background-color: var(--accent-purple);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .featured-section {
+            background: var(--gradient-subtle);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 48px;
+            text-align: center;
+        }
+
+        .featured-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .featured-description {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 24px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .notify-btn {
+            background-color: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .notify-btn:hover {
+            background-color: var(--accent-purple-hover);
+            transform: translateY(-1px);
+        }
+
+        .timing-badge {
+            display: inline-block;
+            background-color: var(--bg-tertiary);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-top: 16px;
+        }
+
+        /* Status indicator */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+            
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .featured-section {
+                padding: 24px;
+            }
+        }
+
+        .fade-in-stagger > * {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .fade-in-stagger > *:nth-child(1) { animation-delay: 0.1s; }
+        .fade-in-stagger > *:nth-child(2) { animation-delay: 0.2s; }
+        .fade-in-stagger > *:nth-child(3) { animation-delay: 0.3s; }
+        .fade-in-stagger > *:nth-child(4) { animation-delay: 0.4s; }
+        .fade-in-stagger > *:nth-child(5) { animation-delay: 0.5s; }
+        .fade-in-stagger > *:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+        <svg class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <button class="back-btn" onclick="goBack()">←</button>
+            <div class="header-content">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>Learning hub active</span>
+                </div>
+                <h1 class="page-title">Tutorials</h1>
+                <p class="page-subtitle">Master the art of cooking with guided video lessons</p>
+            </div>
+            <div style="width: 40px;"></div> <!-- Spacer for centering -->
+        </header>
+
+        <!-- Featured Section - Complete School -->
+        <div class="featured-section">
+            <h2 class="featured-title">🎓 Complete Culinary School</h2>
+            <p class="featured-description">
+                A comprehensive curriculum covering the fundamentals of great cooking. 
+                From knife skills to flavor theory, learn what makes exceptional cuisine.
+            </p>
+            <button class="notify-btn" onclick="notifyMe()">Notify Me When Available</button>
+            <div class="timing-badge">Coming Mid 2026</div>
+        </div>
+
+        <!-- Getting Started Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    🚀 Getting Started
+                    <span class="coming-soon-badge">Coming Soon</span>
+                </div>
+                <button class="see-all-btn" onclick="seeAll('getting-started')">See All</button>
+            </div>
+            <div class="video-grid fade-in-stagger">
+                <div class="video-card" onclick="playVideo('app-tour')">
+                    <div class="video-thumbnail"></div>
+                    <div class="video-info">
+                        <div class="video-title">Complete App Tour</div>
+                        <div class="video-duration">8 min</div>
+                        <div class="video-description">Navigate FlavorCraft like a pro with this comprehensive walkthrough</div>
+                    </div>
+                </div>
+                <div class="video-card" onclick="playVideo('first-recipe')">
+                    <div class="video-thumbnail"></div>
+                    <div class="video-info">
+                        <div class="video-title">Your First AI Recipe</div>
+                        <div class="video-duration">12 min</div>
+                        <div class="video-description">Learn how to create and customize your first dish using our engines</div>
+                    </div>
+                </div>
+                <div class="video-card" onclick="playVideo('profile-setup')">
+                    <div class="video-thumbnail"></div>
+                    <div class="video-info">
+                        <div class="video-title">Setting Up Your Profile</div>
+                        <div class="video-duration">6 min</div>
+                        <div class="video-description">Optimize your experience with personalized preferences and restrictions</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mise en Place Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    📋 Mise en Place
+                    <span class="coming-soon-badge">Coming Soon</span>
+                </div>
+                <button class="see-all-btn" onclick="seeAll('mise-en-place')">See All</button>
+            </div>
+            <div class="video-grid fade-in-stagger">
+                <div class="video-card" onclick="playVideo('kitchen-organization')">
+                    <div class="video-thumbnail"></div>
+                    <div class="video-info">
+                        <div class="video-title">Kitchen Organization Fundamentals</div>
+                        <div class="video-duration">15 min</div>
+                        <div class="video-description">Set up your workspace for maximum efficiency and flow</div>
+                    </div>
+                </div>
+                <div class="video-card" onclick="playVideo('prep-workflow')">
+                    <div class="video-thumbnail"></div>
+                    <div class="video-info">
+                        <div class="video-title">Professional Prep Workflow</div>
+                        <div class="video-duration">18 min</div>
+                        <div class="video-description">Learn the systematic approach used in professional kitchens</div>
+                    </div>
+                </div>
+                <div class="video-card" onclick="playVideo('timing-management')">
+                    <div class="video-thumbnail"></div>
+                    <div class="video-info">
+                        <div class="video-title">Timing & Planning</div>
+                        <div class="video-duration">11 min</div>
+                        <div class="video-description">Master the art of coordinating multiple dishes simultaneously</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ingredient Prep & Storage Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    🥕 Ingredient Prep & Storage
+                    <span class="coming-soon-badge">Coming Soon</span>
+                </div>
+                <button class="see-all-btn" onclick="seeAll('ingredient-prep')">See All</button>
+            </div>
+            <div class="video-grid fade-in-stagger">
+                <div class="video-card" onclick="playVideo('knife-skills')">
+                    <div class="video-thumbnail">
+                        <div class="premium-badge">Premium</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">Essential Knife Skills</div>
+                        <div class="video-duration">25 min</div>
+                        <div class="video-description">Master fundamental cuts and techniques for precise, efficient prep</div>
+                    </div>
+                </div>
+                <div class="video-card" onclick="playVideo('storage-guide')">
+                    <div class="video-thumbnail"></div>
+                    <div class="video-info">
+                        <div class="video-title">Proper Storage Techniques</div>
+                        <div class="video-duration">14 min</div>
+                        <div class="video-description">Extend freshness and maintain quality with optimal storage methods</div>
+                    </div>
+                </div>
+                <div class="video-card" onclick="playVideo('ingredient-selection')">
+                    <div class="video-thumbnail"></div>
+                    <div class="video-info">
+                        <div class="video-title">Selecting Quality Ingredients</div>
+                        <div class="video-duration">16 min</div>
+                        <div class="video-description">Learn to identify the best produce, proteins, and pantry items</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cooking Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    🔥 Cooking
+                    <span class="coming-soon-badge">Coming Soon</span>
+                </div>
+                <button class="see-all-btn" onclick="seeAll('cooking')">See All</button>
+            </div>
+            <div class="video-grid fade-in-stagger">
+                <div class="video-card" onclick="playVideo('heat-control')">
+                    <div class="video-thumbnail">
+                        <div class="premium-badge">Premium</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">Heat Control Mastery</div>
+                        <div class="video-duration">22 min</div>
+                        <div class="video-description">Understanding temperature and timing for perfect results every time</div>
+                    </div>
+                </div>
+                <div class="video-card" onclick="playVideo('saucing-basics')">
+                    <div class="video-thumbnail"></div>
+                    <div class="video-info">
+                        <div class="video-title">Sauce Fundamentals</div>
+                        <div class="video-duration">19 min</div>
+                        <div class="video-description">Build flavor depth with classic sauce techniques and modern applications</div>
+                    </div>
+                </div>
+                <div class="video-card" onclick="playVideo('protein-cooking')">
+                    <div class="video-thumbnail"></div>
+                    <div class="video-info">
+                        <div class="video-title">Protein Perfection</div>
+                        <div class="video-duration">28 min</div>
+                        <div class="video-description">Achieve ideal doneness and texture across all protein types</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Techniques Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    ⚗️ Advanced Techniques
+                    <span class="coming-soon-badge">Coming Soon</span>
+                </div>
+                <button class="see-all-btn" onclick="seeAll('advanced')">See All</button>
+            </div>
+            <div class="video-grid fade-in-stagger">
+                <div class="video-card" onclick="playVideo('molecular-gastronomy')">
+                    <div class="video-thumbnail">
+                        <div class="premium-badge">Premium</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">Molecular Gastronomy Basics</div>
+                        <div class="video-duration">35 min</div>
+                        <div class="video-description">Explore modern techniques that transform texture and presentation</div>
+                    </div>
+                </div>
+                <div class="video-card" onclick="playVideo('fermentation')">
+                    <div class="video-thumbnail">
+                        <div class="premium-badge">Premium</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">Fermentation & Preservation</div>
+                        <div class="video-duration">42 min</div>
+                        <div class="video-description">Master traditional and modern fermentation techniques for complex flavors</div>
+                    </div>
+                </div>
+                <div class="video-card" onclick="playVideo('plating-presentation')">
+                    <div class="video-thumbnail"></div>
+                    <div class="video-info">
+                        <div class="video-title">Professional Plating</div>
+                        <div class="video-duration">24 min</div>
+                        <div class="video-description">Learn restaurant-level presentation and garnishing techniques</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+
+
+        function seeAll(section) {
+            const btn = event.target;
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                btn.style.transform = 'scale(1)';
+            }, 150);
+            
+            console.log(`See all ${section} videos`);
+        }
+
+        function playVideo(videoId) {
+            const card = event.currentTarget;
+            card.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                card.style.transform = 'translateY(-2px)';
+            }, 150);
+            
+            console.log(`Playing video: ${videoId}`);
+        }
+
+        function notifyMe() {
+            const btn = event.target;
+            const originalText = btn.textContent;
+            const originalBg = btn.style.backgroundColor;
+            
+            btn.style.transform = 'scale(0.95)';
+            btn.textContent = 'Added to notifications!';
+            btn.style.backgroundColor = 'var(--accent-green)';
+            
+            setTimeout(() => {
+                btn.style.transform = 'scale(1)';
+            }, 150);
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.backgroundColor = originalBg;
+            }, 2000);
+            
+            console.log('Added to notification list for Complete Culinary School');
+        }
+
+        // Initialize theme and animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+            }
+
+            // Add stagger animations on load
+            const sections = document.querySelectorAll('.section');
+            sections.forEach((section, index) => {
+                section.style.animationDelay = `${0.1 + index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>

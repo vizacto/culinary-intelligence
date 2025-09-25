@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="flavorcraft-navigation.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Culinary Intelligence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #fafafa;
+            --bg-tertiary: #f5f5f5;
+            --border-subtle: #e5e7eb;
+            --border-default: #d1d5db;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --accent-purple: #6366f1;
+            --accent-purple-hover: #4f46e5;
+            --accent-orange: #f97316;
+            --accent-green: #10b981;
+            --surface-hover: #f9fafb;
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --gradient-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --border-subtle: #222222;
+            --border-default: #333333;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-tertiary: #666666;
+            --surface-hover: #1f1f1f;
+            --gradient-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--accent-purple);
+        }
+
+        .theme-icon {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover .theme-icon {
+            transform: rotate(180deg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header */
+        .header {
+            padding: 48px 0 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 48px;
+        }
+
+        .greeting {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .mission {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            margin-bottom: 32px;
+            font-weight: 500;
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--surface-hover);
+            color: var(--text-primary);
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 32px;
+            margin-bottom: 48px;
+        }
+
+        /* Engine Cards */
+        .engines-section {
+            animation: slideInLeft 0.6s ease-out 0.1s both;
+        }
+
+        .engines-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .engines-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .engine-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .engine-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.2s ease;
+        }
+
+        .engine-card:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--accent-purple);
+            transform: translateY(-2px);
+        }
+
+        .engine-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .engine-card.primary {
+            background: var(--gradient-subtle);
+            border-color: var(--accent-purple);
+        }
+
+        .engine-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .engine-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .engine-badge {
+            display: inline-block;
+            background-color: var(--accent-purple);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Seasonal Card */
+        .seasonal-section {
+            animation: slideInRight 0.6s ease-out 0.2s both;
+        }
+
+        .seasonal-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            height: fit-content;
+        }
+
+        .seasonal-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .location-badge {
+            display: inline-block;
+            background-color: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        .ingredient-list {
+            list-style: none;
+            max-height: 200px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .ingredient-list.expanded {
+            max-height: 400px;
+        }
+
+        .ingredient-item {
+            padding: 8px 0;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-subtle);
+            transition: all 0.2s ease;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: slideInItem 0.3s ease forwards;
+        }
+
+        .ingredient-item:last-child {
+            border-bottom: none;
+        }
+
+        .ingredient-item:hover {
+            color: var(--text-primary);
+            padding-left: 8px;
+        }
+
+        .ingredient-item.visible {
+            display: block;
+        }
+
+        .ingredient-item.hidden {
+            display: none;
+        }
+
+        @keyframes slideInItem {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .expand-btn {
+            background: none;
+            border: none;
+            color: var(--accent-purple);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 12px;
+            padding: 0;
+            transition: color 0.2s ease;
+        }
+
+        .expand-btn:hover {
+            color: var(--accent-purple-hover);
+        }
+
+        /* Bottom Section */
+        .bottom-section {
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        .bottom-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .bottom-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .bottom-card:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        .bottom-card-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Status indicator */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .greeting {
+                font-size: 2rem;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .engines-grid {
+                gap: 12px;
+            }
+
+            .bottom-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-buttons {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+        <svg class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>All systems operational</span>
+            </div>
+            <h1 class="greeting">Good Morning, Yiannis</h1>
+            <p class="subtitle">Welcome to Culinary Intelligence</p>
+            <p class="mission">Revolutionizing modern cooking, powered by AI</p>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="showSection('balance')">Balance Profile</button>
+                <button class="nav-btn" onclick="showSection('recipes')">Saved Recipes</button>
+                <button class="nav-btn" onclick="showSection('settings')">Settings</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="engines-section">
+                <h2 class="engines-title">Cooking Engines</h2>
+                <div class="engines-grid">
+                    <div class="engine-card primary" onclick="showEngine('creation')">
+                        <div class="engine-badge">Featured</div>
+                        <div class="engine-title">Dish Creation Engine</div>
+                        <div class="engine-subtitle">Most advanced recipe crafter with AI-powered ingredient matching and cooking techniques</div>
+                    </div>
+                    <div class="engine-card" onclick="showEngine('flavor')">
+                        <div class="engine-title">Flavor Engine</div>
+                        <div class="engine-subtitle">Find the perfect flavor combination using molecular gastronomy principles</div>
+                    </div>
+                    <div class="engine-card" onclick="showEngine('bespoke')">
+                        <div class="engine-title">Bespoke Engines</div>
+                        <div class="engine-subtitle">Maintain ratios, maintain results with precision cooking algorithms</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="seasonal-section">
+                <div class="seasonal-card">
+                    <div class="seasonal-card" onclick="viewSeasonalIngredients()">
+                    <div class="location-badge">Lazio, Italy</div>
+                    <h3 class="seasonal-title">Currently Seasonal</h3>
+                    <ul class="ingredient-list collapsed" id="ingredientList">
+                        <li class="ingredient-item visible">Apples</li>
+                        <li class="ingredient-item visible">Strawberries</li>
+                        <li class="ingredient-item visible">Tomatoes</li>
+                        <li class="ingredient-item hidden">Spinach</li>
+                        <li class="ingredient-item hidden">Olives</li>
+                        <li class="ingredient-item hidden">Grapes</li>
+                        <li class="ingredient-item hidden">Carrots</li>
+                        <li class="ingredient-item hidden">Garlic</li>
+                        <li class="ingredient-item hidden">Peppers</li>
+                    </ul>
+                    <button class="expand-btn" onclick="toggleIngredients()" id="expandBtn">
+                        See All →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-section">
+            <h2 class="bottom-title">Resources</h2>
+            <div class="bottom-grid">
+                <div class="bottom-card" onclick="showInfo('science')">
+                    <div class="bottom-card-title">The Science of Our Method</div>
+                </div>
+                <div class="bottom-card" onclick="showInfo('frameworks')">
+                    <div class="bottom-card-title">Dish Frameworks</div>
+                </div>
+                <div class="bottom-card" onclick="showInfo('tutorials')">
+                    <div class="bottom-card-title">Tutorials</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+
+
+        function toggleIngredients() {
+            const list = document.getElementById('ingredientList');
+            const btn = document.getElementById('expandBtn');
+            const hiddenItems = document.querySelectorAll('.ingredient-item.hidden');
+            
+            if (list.classList.contains('collapsed')) {
+                list.classList.remove('collapsed');
+                list.classList.add('expanded');
+                
+                hiddenItems.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.classList.remove('hidden');
+                        item.classList.add('visible');
+                        item.style.animationDelay = `${index * 0.05}s`;
+                    }, index * 50);
+                });
+                
+                setTimeout(() => {
+                    btn.textContent = '← Show less';
+                }, 300);
+            } else {
+                list.classList.remove('expanded');
+                list.classList.add('collapsed');
+                
+                Array.from(hiddenItems).reverse().forEach((item, index) => {
+                    setTimeout(() => {
+                        item.classList.add('hidden');
+                        item.classList.remove('visible');
+                    }, index * 30);
+                });
+                
+                btn.textContent = 'Show 6 more →';
+            }
+        }
+
+        // Dynamic greeting based on time
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+            }
+
+            const hour = new Date().getHours();
+            const greeting = document.querySelector('.greeting');
+            
+            if (hour < 12) {
+                greeting.textContent = 'Good Morning, Yiannis';
+            } else if (hour < 18) {
+                greeting.textContent = 'Good Afternoon, Yiannis';
+            } else {
+                greeting.textContent = 'Good Evening, Yiannis';
+            }
+
+            // Add stagger animation to cards
+            const cards = document.querySelectorAll('.engine-card, .bottom-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${0.1 + index * 0.05}s`;
+            });
+        });
+    </script>
+</body>
+</html>

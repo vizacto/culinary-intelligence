@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="flavorcraft-navigation.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Science of Our Method - FlavorCraft</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #fafafa;
+            --bg-tertiary: #f5f5f5;
+            --border-subtle: #e5e7eb;
+            --border-default: #d1d5db;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --accent-purple: #6366f1;
+            --accent-purple-hover: #4f46e5;
+            --accent-orange: #f97316;
+            --accent-green: #10b981;
+            --surface-hover: #f9fafb;
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --gradient-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --border-subtle: #222222;
+            --border-default: #333333;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-tertiary: #666666;
+            --surface-hover: #1f1f1f;
+            --gradient-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--accent-purple);
+        }
+
+        .theme-icon {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover .theme-icon {
+            transform: rotate(180deg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header */
+        .header {
+            padding: 48px 0 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 48px;
+            position: relative;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 48px;
+            left: 0;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-btn:hover {
+            background-color: var(--surface-hover);
+            color: var(--text-primary);
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .greeting {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        /* Introduction Section */
+        .intro-section {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            text-align: center;
+            animation: slideInLeft 0.6s ease-out 0.1s both;
+        }
+
+        .intro-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .intro-text {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Method Overview */
+        .method-overview {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .overview-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .overview-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.2s ease;
+        }
+
+        .overview-card:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--accent-purple);
+            transform: translateY(-2px);
+        }
+
+        .overview-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .overview-number {
+            background-color: var(--accent-purple);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.125rem;
+            margin: 0 auto 16px;
+        }
+
+        .overview-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .overview-description {
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Section Header */
+        .section-header {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+        }
+
+        /* 3-Axis System */
+        .axis-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .axis-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .axis-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.2s ease;
+        }
+
+        .axis-card:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--accent-purple);
+            transform: translateY(-2px);
+        }
+
+        .axis-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .axis-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .axis-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .axis-metrics {
+            list-style: none;
+        }
+
+        .metric-item {
+            background-color: var(--bg-tertiary);
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .metric-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Pairing Engine */
+        .pairing-engine {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            animation: slideInRight 0.6s ease-out 0.2s both;
+        }
+
+        .pairing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .pairing-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .pairing-methods {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .method-card {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .method-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .method-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .method-description {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .pairing-visual {
+            background-color: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .visual-placeholder {
+            background-color: var(--bg-primary);
+            border: 2px dashed var(--border-default);
+            border-radius: 8px;
+            padding: 32px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-style: italic;
+        }
+
+        /* AI Integration */
+        .ai-integration {
+            background: var(--gradient-subtle);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            animation: slideInUp 0.6s ease-out 0.3s both;
+        }
+
+        .ai-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .ai-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .process-flow {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .flow-step {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            position: relative;
+        }
+
+        .flow-step::after {
+            content: '→';
+            position: absolute;
+            right: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            font-size: 1.125rem;
+            font-weight: bold;
+        }
+
+        .flow-step:last-child::after {
+            display: none;
+        }
+
+        .flow-number {
+            background-color: var(--accent-purple);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin: 0 auto 8px;
+        }
+
+        .flow-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .flow-description {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-sequence > * {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .fade-in-sequence > *:nth-child(1) { animation-delay: 0.1s; }
+        .fade-in-sequence > *:nth-child(2) { animation-delay: 0.2s; }
+        .fade-in-sequence > *:nth-child(3) { animation-delay: 0.3s; }
+        .fade-in-sequence > *:nth-child(4) { animation-delay: 0.4s; }
+        .fade-in-sequence > *:nth-child(5) { animation-delay: 0.5s; }
+        .fade-in-sequence > *:nth-child(6) { animation-delay: 0.6s; }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .greeting {
+                font-size: 2rem;
+            }
+
+            .method-overview,
+            .axis-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pairing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pairing-methods {
+                grid-template-columns: 1fr;
+            }
+
+            .process-flow {
+                grid-template-columns: 1fr;
+            }
+
+            .flow-step::after {
+                content: '↓';
+                right: 50%;
+                top: auto;
+                bottom: -12px;
+                transform: translateX(50%);
+            }
+
+            .flow-step:last-child::after {
+                display: none;
+            }
+
+            .back-btn {
+                position: static;
+                margin-bottom: 20px;
+                align-self: flex-start;
+            }
+
+            .header {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+        <svg class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>AI methodology active</span>
+            </div>
+            <button class="back-btn" onclick="goBack()">← Back</button>
+            <h1 class="greeting">The Science of Our Method</h1>
+            <p class="subtitle">How AI and culinary science create personalized cooking experiences</p>
+        </header>
+
+        <!-- Introduction -->
+        <div class="intro-section">
+            <h2 class="intro-title">Computational Gastronomy</h2>
+            <p class="intro-text">
+                Our approach combines molecular gastronomy, machine learning, and cultural anthropology to understand 
+                what makes food truly satisfying. By analyzing the science of flavor, the skills required for execution, 
+                and the cultural context of cuisines, we create personalized culinary experiences that resonate on multiple levels.
+            </p>
+        </div>
+
+        <!-- Method Overview -->
+        <div class="method-overview fade-in-sequence">
+            <div class="overview-card">
+                <div class="overview-number">1</div>
+                <h3 class="overview-title">3-Axis Analysis</h3>
+                <p class="overview-description">
+                    Every dish is evaluated across Scientific, Skill, and Cultural dimensions to understand 
+                    its complete culinary profile and optimize for your preferences.
+                </p>
+            </div>
+            <div class="overview-card">
+                <div class="overview-number">2</div>
+                <h3 class="overview-title">Food Pairing Engine</h3>
+                <p class="overview-description">
+                    Molecular compatibility analysis combined with machine learning to predict 
+                    successful flavor combinations with scientific precision.
+                </p>
+            </div>
+            <div class="overview-card">
+                <div class="overview-number">3</div>
+                <h3 class="overview-title">Dish Framework</h3>
+                <p class="overview-description">
+                    Structural analysis breaks down every recipe into its fundamental components, 
+                    enabling systematic understanding and creative variation.
+                </p>
+            </div>
+            <div class="overview-card">
+                <div class="overview-number">4</div>
+                <h3 class="overview-title">AI Integration</h3>
+                <p class="overview-description">
+                    Advanced algorithms synthesize all data points to generate personalized recommendations 
+                    that match your taste, skill level, and cultural preferences.
+                </p>
+            </div>
+        </div>
+
+        <!-- 3-Axis System -->
+        <div class="axis-section">
+            <div class="section-header">
+                <h2 class="section-title">The 3-Axis Cooking System</h2>
+                <p class="section-subtitle">
+                    Understanding cuisine through scientific, practical, and cultural lenses
+                </p>
+            </div>
+
+            <div class="axis-grid fade-in-sequence">
+                <div class="axis-card" onclick="exploreAxis('scientific')">
+                    <div class="axis-icon">⚗️</div>
+                    <h3 class="axis-title">Scientific Index</h3>
+                    <ul class="axis-metrics">
+                        <li class="metric-item">Balance</li>
+                        <li class="metric-item">Texture</li>
+                        <li class="metric-item">Aroma</li>
+                        <li class="metric-item">Visual</li>
+                        <li class="metric-item">Eatability</li>
+                        <li class="metric-item">Creativity</li>
+                    </ul>
+                </div>
+
+                <div class="axis-card" onclick="exploreAxis('skill')">
+                    <div class="axis-icon">🔧</div>
+                    <h3 class="axis-title">Skill Index</h3>
+                    <ul class="axis-metrics">
+                        <li class="metric-item">Ingredient Prep</li>
+                        <li class="metric-item">Cooking Technique</li>
+                        <li class="metric-item">Ingredient Sourcing</li>
+                        <li class="metric-item">Tool Adaptation</li>
+                        <li class="metric-item">Recipe Creation</li>
+                    </ul>
+                </div>
+
+                <div class="axis-card" onclick="exploreAxis('cultural')">
+                    <div class="axis-icon">🌍</div>
+                    <h3 class="axis-title">Cultural Index</h3>
+                    <ul class="axis-metrics">
+                        <li class="metric-item">Cuisine Frequency</li>
+                        <li class="metric-item">Evolutionary Relevance</li>
+                        <li class="metric-item">Nostalgia</li>
+                        <li class="metric-item">Tradition</li>
+                        <li class="metric-item">Regional Context</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Food Pairing Engine -->
+        <div class="pairing-engine">
+            <div class="pairing-grid">
+                <div class="pairing-content">
+                    <h3>Food Pairing Engine</h3>
+                    <div class="pairing-methods">
+                        <div class="method-card">
+                            <div class="method-icon">🧬</div>
+                            <div class="method-title">Molecular Compatibility</div>
+                            <div class="method-description">Analysis of shared aromatic compounds and molecular structures</div>
+                        </div>
+                        <div class="method-card">
+                            <div class="method-icon">🤖</div>
+                            <div class="method-title">AI Predictive Model</div>
+                            <div class="method-description">Machine learning trained on thousands of successful flavor combinations</div>
+                        </div>
+                        <div class="method-card">
+                            <div class="method-icon">📊</div>
+                            <div class="method-title">Database Cross Reference</div>
+                            <div class="method-description">Analysis of existing recipes and professional culinary databases</div>
+                        </div>
+                        <div class="method-card">
+                            <div class="method-icon">🧬</div>
+                            <div class="method-title">Evolutionary Reasoning</div>
+                            <div class="method-description">Historical and cultural evolution of successful flavor pairings</div>
+                        </div>
+                        <div class="method-card">
+                            <div class="method-icon">⚖️</div>
+                            <div class="method-title">Targeted Balance</div>
+                            <div class="method-description">Optimization based on your personal flavor profile and preferences</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pairing-visual">
+                    <div class="visual-placeholder">
+                        Interactive Food Pairing Network Visualization
+                        <br><br>
+                        <br><br>
+                        <small>Dynamic graph showing molecular connections between ingredients,
+                        with strength indicators and compatibility scores</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Integration -->
+        <div class="ai-integration">
+            <h2 class="ai-title">AI-Powered Synthesis</h2>
+            <p class="ai-description">
+                Our artificial intelligence engine processes data from all systems to create a unified, 
+                personalized cooking experience. It adapts recommendations based on your preferences, 
+                skill level, available ingredients, and cultural background.
+            </p>
+
+            <div class="process-flow">
+                <div class="flow-step">
+                    <div class="flow-number">1</div>
+                    <div class="flow-title">Data Collection</div>
+                    <div class="flow-description">Gather user preferences, skill level, and available ingredients</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-number">2</div>
+                    <div class="flow-title">3-Axis Analysis</div>
+                    <div class="flow-description">Evaluate potential dishes across scientific, skill, and cultural dimensions</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-number">3</div>
+                    <div class="flow-title">Pairing Optimization</div>
+                    <div class="flow-description">Apply molecular compatibility and predictive models for ingredient selection</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-number">4</div>
+                    <div class="flow-title">Recipe Generation</div>
+                    <div class="flow-description">Create personalized recipes using dish framework principles</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+
+        function exploreAxis(axisType) {
+            const card = event.currentTarget;
+            card.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                card.style.transform = 'translateY(-2px) scale(1)';
+            }, 150);
+            
+            console.log(`Exploring ${axisType} axis`);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+            }
+
+            const sections = document.querySelectorAll('.axis-section, .pairing-engine, .ai-integration');
+            sections.forEach((section, index) => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(30px)';
+                section.style.animation = `fadeInUp 0.8s ease-out ${0.3 + index * 0.2}s forwards`;
+            });
+        });
+    </script>
+</body>
+</html>

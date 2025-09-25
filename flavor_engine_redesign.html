@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="flavorcraft-navigation.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flavor Engine - FlavorCraft</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #fafafa;
+            --bg-tertiary: #f5f5f5;
+            --border-subtle: #e5e7eb;
+            --border-default: #d1d5db;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --accent-purple: #6366f1;
+            --accent-purple-hover: #4f46e5;
+            --accent-orange: #f97316;
+            --accent-green: #10b981;
+            --surface-hover: #f9fafb;
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --gradient-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --border-subtle: #222222;
+            --border-default: #333333;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-tertiary: #666666;
+            --surface-hover: #1f1f1f;
+            --gradient-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--accent-purple);
+        }
+
+        .theme-icon {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover .theme-icon {
+            transform: rotate(180deg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header */
+        .header {
+            padding: 48px 0 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 48px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 48px;
+            right: 0;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .close-btn:hover {
+            background-color: var(--surface-hover);
+            color: var(--text-primary);
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .greeting {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        /* Controls Section */
+        .controls-section {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            animation: slideInLeft 0.6s ease-out 0.1s both;
+        }
+
+        .balance-adjust {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .balance-btn {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-default);
+            color: var(--text-primary);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .balance-btn:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        .mode-selection {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .mode-btn {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-default);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .mode-btn:hover {
+            background-color: var(--surface-hover);
+            color: var(--text-primary);
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        .mode-btn.active {
+            background: var(--gradient-subtle);
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        /* Info Box */
+        .info-box {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            animation: slideInRight 0.6s ease-out 0.2s both;
+        }
+
+        .info-item {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-item-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-item-description {
+            color: var(--text-secondary);
+            line-height: 1.5;
+            font-size: 0.875rem;
+        }
+
+        /* Metrics Section */
+        .metrics-section {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            animation: slideInLeft 0.6s ease-out 0.3s both;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .metric-card {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .metric-card:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        .metric-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .metric-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            font-size: 0.875rem;
+        }
+
+        .metric-description {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* Input Section */
+        .input-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .input-section.single-column {
+            grid-template-columns: 1fr;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .input-column {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            animation: slideInUp 0.6s ease-out 0.4s both;
+        }
+
+        .input-area {
+            margin-bottom: 16px;
+        }
+
+        .input-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-size: 0.875rem;
+        }
+
+        .ingredient-input {
+            width: 100%;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .ingredient-input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .ingredient-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .example-text {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            font-style: italic;
+            margin-top: 8px;
+        }
+
+        /* Results Section */
+        .results-section {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            min-height: 400px;
+            animation: slideInUp 0.6s ease-out 0.5s both;
+        }
+
+        .results-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .result-item {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.2s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideInResult 0.5s ease forwards;
+        }
+
+        .result-item:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        @keyframes slideInResult {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .ingredient-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .score-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score-badge {
+            background-color: var(--accent-purple);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .score-high {
+            background-color: var(--accent-green);
+        }
+
+        .score-medium {
+            background-color: var(--accent-orange);
+        }
+
+        .score-low {
+            background-color: #ef4444;
+        }
+
+        .result-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .pairing-reason {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .potency-info {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .potency-label {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin-bottom: 2px;
+        }
+
+        .potency-value {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-tertiary);
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-message {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .empty-submessage {
+            font-size: 0.875rem;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .greeting {
+                font-size: 2rem;
+            }
+
+            .input-section {
+                grid-template-columns: 1fr;
+                max-width: none;
+                margin-left: 0;
+                margin-right: 0;
+            }
+
+            .input-section.single-column {
+                max-width: none;
+            }
+
+            .mode-selection {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .result-details {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .potency-info {
+                text-align: left;
+            }
+
+            .close-btn {
+                position: static;
+                margin-bottom: 20px;
+                align-self: flex-start;
+            }
+
+            .header {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+        <svg class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>Flavor engine ready</span>
+            </div>
+            <button class="close-btn" onclick="goBack()">← Back</button>
+            <h1 class="greeting">Flavor Engine</h1>
+            <p class="subtitle">Find perfect flavor combinations using molecular gastronomy</p>
+        </header>
+
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="balance-adjust">
+                <button class="balance-btn" onclick="adjustBalance()">
+                    <span>⚖️</span>
+                    <span>Adjust Balance</span>
+                </button>
+            </div>
+
+            <div class="mode-selection">
+                <button class="mode-btn active" onclick="selectMode('pairing')" id="pairingBtn">
+                    Flavor Pairing
+                </button>
+                <button class="mode-btn" onclick="selectMode('bridge')" id="bridgeBtn">
+                    Flavor Bridge
+                </button>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <div class="info-item">
+                <div class="info-item-title">
+                    <span>📊</span>
+                    Potency
+                </div>
+                <div class="info-item-description">
+                    The recommended dosage to use per 100g of a dish for optimal flavor balance.
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-item-title">
+                    <span>🎯</span>
+                    Flavor Pairing
+                </div>
+                <div class="info-item-description">
+                    Find complementary ingredients that enhance and elevate your main ingredient's natural flavors.
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-item-title">
+                    <span>🌉</span>
+                    Flavor Bridge
+                </div>
+                <div class="info-item-description">
+                    Discover connecting ingredients that create harmony between two different flavors in your dish.
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics Section -->
+        <div class="metrics-section">
+            <h2 class="section-title">
+                <span>🧬</span>
+                Our Metrics Overview
+            </h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="metric-icon">⚛️</span>
+                    <div class="metric-title">Molecular Compatibility</div>
+                    <div class="metric-description">Analysis of shared aromatic compounds and molecular structures</div>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">🤖</span>
+                    <div class="metric-title">Trained AI Predictive Model</div>
+                    <div class="metric-description">Machine learning trained on thousands of successful flavor combinations</div>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">📊</span>
+                    <div class="metric-title">Database Cross Reference</div>
+                    <div class="metric-description">Analysis of existing recipes and professional culinary databases</div>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">🧬</span>
+                    <div class="metric-title">Evolutionary Based Reasoning</div>
+                    <div class="metric-description">Historical and cultural evolution of successful flavor pairings</div>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">⚖️</span>
+                    <div class="metric-title">Targeted Balance</div>
+                    <div class="metric-description">Optimization based on your personal flavor profile and preferences</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Section -->
+        <div class="input-section single-column">
+            <div class="input-column">
+                <div class="input-area">
+                    <div class="input-label" id="inputLabel">Enter an ingredient to find perfect pairings:</div>
+                    <input type="text" class="ingredient-input" id="mainIngredient" placeholder="Type an ingredient..." oninput="searchPairings()">
+                    <div class="example-text" id="exampleText">Example: Try typing "strawberry" to see suggested pairings</div>
+                </div>
+            </div>
+
+            <div class="input-column" id="secondaryInputColumn" style="display: none;">
+                <div class="input-area">
+                    <div class="input-label">Second ingredient (for bridging):</div>
+                    <input type="text" class="ingredient-input" id="secondIngredient" placeholder="Type another ingredient..." oninput="searchBridge()">
+                    <div class="example-text">Example: "chocolate" to find bridges between strawberry and chocolate</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section">
+            <h2 class="section-title">
+                <span>🎯</span>
+                <span id="resultsTitle">Suggested Pairings</span>
+            </h2>
+            <div class="results-list" id="resultsList">
+                <div class="empty-state">
+                    <div class="empty-icon">🔍</div>
+                    <div class="empty-message">Start typing an ingredient</div>
+                    <div class="empty-submessage">We'll find the perfect flavor companions using our advanced AI analysis</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'pairing';
+
+        // Sample pairing data for strawberry
+        const strawberryPairings = [
+            { name: 'Vanilla', score: 96, reason: 'Complementary aromatic compounds create perfect sweetness balance', potency: '2-3g' },
+            { name: 'Dark Chocolate', score: 94, reason: 'Contrasting bitterness enhances strawberry\'s natural sweetness', potency: '8-12g' },
+            { name: 'Balsamic Vinegar', score: 91, reason: 'Acidity amplifies fruit flavors while adding complexity', potency: '1-2g' },
+            { name: 'Fresh Mint', score: 89, reason: 'Cool menthol compounds provide refreshing contrast', potency: '0.5-1g' },
+            { name: 'Lemon Zest', score: 87, reason: 'Citrus oils brighten and enhance berry notes', potency: '0.3-0.8g' },
+            { name: 'Black Pepper', score: 85, reason: 'Piperine compounds create surprising flavor depth', potency: '0.1-0.3g' },
+            { name: 'Mascarpone', score: 82, reason: 'Rich dairy fats balance acidity and provide creamy texture', potency: '15-25g' },
+            { name: 'Rosemary', score: 78, reason: 'Pine-like aromatics add sophisticated herbal notes', potency: '0.2-0.5g' },
+            { name: 'Honey', score: 75, reason: 'Natural sugars complement while adding floral complexity', potency: '3-5g' },
+            { name: 'Goat Cheese', score: 72, reason: 'Tangy saltiness creates sweet-savory balance', potency: '10-15g' }
+        ];
+
+        const strawberryBridges = [
+            { name: 'Cream', score: 93, reason: 'Acts as neutral base that smooths both flavors together', potency: '20-30g' },
+            { name: 'Sugar', score: 89, reason: 'Enhances sweetness while balancing any bitter notes', potency: '5-8g' },
+            { name: 'Pastry', score: 86, reason: 'Provides textural bridge and mild flavor canvas', potency: '25-40g' },
+            { name: 'Orange Zest', score: 83, reason: 'Citrus oils connect fruit and chocolate flavor profiles', potency: '0.5-1g' },
+            { name: 'Espresso', score: 80, reason: 'Coffee compounds bridge berry and chocolate bitterness', potency: '2-4g' },
+            { name: 'Cinnamon', score: 77, reason: 'Warm spice complements both sweet and bitter elements', potency: '0.3-0.7g' }
+        ];
+
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function selectMode(mode) {
+            currentMode = mode;
+            
+            // Update button states
+            document.getElementById('pairingBtn').classList.remove('active');
+            document.getElementById('bridgeBtn').classList.remove('active');
+            
+            const inputSection = document.querySelector('.input-section');
+            const secondaryColumn = document.getElementById('secondaryInputColumn');
+            
+            if (mode === 'pairing') {
+                document.getElementById('pairingBtn').classList.add('active');
+                document.getElementById('inputLabel').textContent = 'Enter an ingredient to find perfect pairings:';
+                document.getElementById('exampleText').textContent = 'Example: Try typing "strawberry" to see suggested pairings';
+                document.getElementById('resultsTitle').textContent = 'Suggested Pairings';
+                secondaryColumn.style.display = 'none';
+                inputSection.classList.add('single-column');
+            } else {
+                document.getElementById('bridgeBtn').classList.add('active');
+                document.getElementById('inputLabel').textContent = 'First ingredient:';
+                document.getElementById('exampleText').textContent = 'Example: "strawberry" - we\'ll find bridges to your second ingredient';
+                document.getElementById('resultsTitle').textContent = 'Flavor Bridges';
+                secondaryColumn.style.display = 'block';
+                inputSection.classList.remove('single-column');
+            }
+            
+            clearResults();
+            console.log('Selected mode:', mode);
+        }
+
+        function searchPairings() {
+            const input = document.getElementById('mainIngredient').value.toLowerCase().trim();
+            
+            if (input === 'strawberry' && currentMode === 'pairing') {
+                displayResults(strawberryPairings);
+            } else if (input.length > 0) {
+                showLoadingState();
+            } else {
+                clearResults();
+            }
+        }
+
+        function searchBridge() {
+            const input1 = document.getElementById('mainIngredient').value.toLowerCase().trim();
+            const input2 = document.getElementById('secondIngredient').value.toLowerCase().trim();
+            
+            if (input1 === 'strawberry' && input2.length > 0 && currentMode === 'bridge') {
+                displayResults(strawberryBridges);
+            } else if (input1.length > 0 && input2.length > 0) {
+                showLoadingState();
+            } else {
+                clearResults();
+            }
+        }
+
+        function displayResults(results) {
+            const resultsList = document.getElementById('resultsList');
+            resultsList.innerHTML = '';
+            
+            results.forEach((result, index) => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                resultItem.style.animationDelay = `${index * 0.1}s`;
+                
+                const scoreClass = result.score >= 85 ? 'score-high' : result.score >= 75 ? 'score-medium' : 'score-low';
+                
+                resultItem.innerHTML = `
+                    <div class="result-header">
+                        <div class="ingredient-name">${result.name}</div>
+                        <div class="score-container">
+                            <div class="score-badge ${scoreClass}">${result.score}%</div>
+                        </div>
+                    </div>
+                    <div class="result-details">
+                        <div class="pairing-reason">${result.reason}</div>
+                        <div class="potency-info">
+                            <div class="potency-label">Potency</div>
+                            <div class="potency-value">${result.potency}</div>
+                        </div>
+                    </div>
+                `;
+                
+                resultsList.appendChild(resultItem);
+            });
+        }
+
+        function showLoadingState() {
+            const resultsList = document.getElementById('resultsList');
+            resultsList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">⏳</div>
+                    <div class="empty-message">Analyzing flavor compounds...</div>
+                    <div class="empty-submessage">Our AI is finding the perfect matches</div>
+                </div>
+            `;
+        }
+
+        function clearResults() {
+            const resultsList = document.getElementById('resultsList');
+            resultsList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">🔍</div>
+                    <div class="empty-message">Start typing an ingredient</div>
+                    <div class="empty-submessage">We'll find the perfect flavor companions using our advanced AI analysis</div>
+                </div>
+            `;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+            }
+
+            // Add stagger animation to metric cards
+            const cards = document.querySelectorAll('.metric-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.animation = `fadeInUp 0.6s ease-out ${0.1 + index * 0.1}s forwards`;
+            });
+        });
+    </script>
+</body>
+</html>

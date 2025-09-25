@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bespoke Engines - FlavorCraft</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #fafafa;
+            --bg-tertiary: #f5f5f5;
+            --border-subtle: #e5e7eb;
+            --border-default: #d1d5db;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --accent-purple: #6366f1;
+            --accent-purple-hover: #4f46e5;
+            --accent-orange: #f97316;
+            --accent-green: #10b981;
+            --surface-hover: #f9fafb;
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --gradient-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --border-subtle: #222222;
+            --border-default: #333333;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-tertiary: #666666;
+            --surface-hover: #1f1f1f;
+            --gradient-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--accent-purple);
+        }
+
+        .theme-icon {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover .theme-icon {
+            transform: rotate(180deg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Header */
+        .header {
+            padding: 48px 0 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 48px;
+            position: relative;
+        }
+
+        .header-with-back {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-align: left;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-btn:hover {
+            background-color: var(--surface-hover);
+            color: var(--text-primary);
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        .close-btn {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .close-btn:hover {
+            background-color: var(--surface-hover);
+            color: var(--text-primary);
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        .greeting {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Description Section */
+        .description-section {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            text-align: center;
+            animation: slideInLeft 0.6s ease-out 0.1s both;
+        }
+
+        .description-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .description-text {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Engines Grid */
+        .engines-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .engine-category {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .engine-category::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.2s ease;
+        }
+
+        .engine-category:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--accent-purple);
+            transform: translateY(-2px);
+        }
+
+        .engine-category:hover::before {
+            transform: scaleX(1);
+        }
+
+        .category-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .engine-btn {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .engine-btn:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        .engine-btn:last-child {
+            margin-bottom: 0;
+        }
+
+        .btn-arrow {
+            color: var(--text-tertiary);
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        .engine-btn:hover .btn-arrow {
+            transform: translateX(3px);
+            color: var(--text-secondary);
+        }
+
+        /* Calculator Sections */
+        .calculator-section {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            animation: slideInRight 0.6s ease-out 0.2s both;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-card {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .option-card:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        .option-card.selected {
+            background: var(--gradient-subtle);
+            border-color: var(--accent-purple);
+            transform: translateY(-1px);
+        }
+
+        .option-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            font-size: 0.875rem;
+        }
+
+        .option-description {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* Flavor Concentrate Section */
+        .flavor-concentrate-section {
+            margin-top: 20px;
+            padding: 16px;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        /* Form Controls */
+        .usage-input {
+            width: 100%;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+            margin-bottom: 16px;
+        }
+
+        .usage-input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .usage-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .usage-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-size: 0.875rem;
+        }
+
+/* Sliders */
+.servings-slider-container {
+    margin-bottom: 16px;
+}
+
+.hydration-slider-container {
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.servings-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background-color: var(--bg-tertiary);
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.servings-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: var(--accent-purple);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.servings-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+/* Hydration slider specific styles */
+.hydration-track {
+    position: relative;
+    width: 100%;
+    height: 6px;
+}
+
+.hydration-ranges {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    display: flex;
+    border-radius: 3px;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.hydration-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: transparent;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    z-index: 2;
+    margin: 0;
+}
+
+.hydration-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: var(--accent-purple);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    margin-top: -6px; /* Use margin-top instead of top for proper positioning */
+}
+
+.hydration-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.hydration-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: var(--accent-purple);
+    cursor: pointer;
+    border: none;
+    margin-top: -6px;
+}
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        .servings-display,
+        .hydration-display {
+            text-align: center;
+            margin-top: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Hydration Controls */
+        .hydration-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .auto-hydration-btn {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-default);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .auto-hydration-btn:hover {
+            background-color: var(--surface-hover);
+            color: var(--text-primary);
+        }
+
+        .auto-hydration-btn.active {
+            background: var(--gradient-subtle);
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .hydration-status {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+
+ .hydration-track {
+    position: relative;
+    width: 100%;
+    height: 6px;
+}
+
+
+        .hydration-ranges {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    display: flex;
+    border-radius: 3px;
+    overflow: hidden;
+    z-index: 1;
+}
+
+        .hydration-range {
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .range-red {
+            background-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .range-yellow {
+            background-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .range-green {
+            background-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .hydration-info {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .hydration-info-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Calculate Button */
+        .calculate-btn {
+            background-color: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .calculate-btn:hover {
+            background-color: var(--accent-purple-hover);
+            transform: translateY(-1px);
+        }
+
+        /* Recipe Output */
+        .recipe-output {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 24px;
+            display: none;
+        }
+
+        .recipe-output.show {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .recipe-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .ingredients-list {
+            margin-bottom: 16px;
+        }
+
+        .ingredient-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .ingredient-item:last-child {
+            border-bottom: none;
+        }
+
+        .ingredient-name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .ingredient-amount {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .technique-notes {
+            background-color: var(--bg-secondary);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .technique-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .technique-text {
+            color: var(--text-secondary);
+            line-height: 1.5;
+            font-size: 0.875rem;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .greeting {
+                font-size: 2rem;
+            }
+
+            .engines-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .option-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-with-back {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .header-left {
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+        <svg class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+    </div>
+
+    <div class="container">
+        <!-- Main Bespoke Engines Page -->
+        <div class="page active" id="mainPage">
+            <header class="header">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>Specialized engines ready</span>
+                </div>
+                <button class="close-btn" onclick="goBack()">← Back</button>
+                <h1 class="greeting">Bespoke Engines</h1>
+                <p class="subtitle">Specifically trained culinary models</p>
+            </header>
+
+            <div class="description-section">
+                <div class="description-title">Precision-Trained AI Models</div>
+                <div class="description-text">
+                    Our bespoke engines are specialized AI models trained on specific culinary techniques and recipes. 
+                    Each engine has been meticulously crafted to understand the nuances of particular cooking methods, 
+                    allowing us to adapt and perfect recipes for bread dough, pasta, stocks, sauces, and more with unprecedented precision.
+                </div>
+            </div>
+
+            <div class="engines-grid">
+                <div class="engine-category">
+                    <div class="category-title">
+                        <span>🍞</span>
+                        Bread Dough
+                    </div>
+                    <button class="engine-btn" onclick="openEngine('sourdough')">
+                        <span>Sourdough</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                    <button class="engine-btn" onclick="openEngine('focaccia')">
+                        <span>Focaccia</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                    <button class="engine-btn" onclick="openEngine('pizza')">
+                        <span>Pizza</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                </div>
+
+                <div class="engine-category">
+                    <div class="category-title">
+                        <span>🍝</span>
+                        Pasta & Stocks
+                    </div>
+                    <button class="engine-btn" onclick="openPastaDough()">
+                        <span>Pasta Dough</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                    <button class="engine-btn" onclick="openEngine('stock')">
+                        <span>Stock</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                </div>
+
+                <div class="engine-category">
+                    <div class="category-title">
+                        <span>🍷</span>
+                        Sauces & Cocktails
+                    </div>
+                    <button class="engine-btn" onclick="openEngine('french-sauces')">
+                        <span>French Sauces</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                    <button class="engine-btn" onclick="openEngine('pasta-sauces')">
+                        <span>Pasta Sauces</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                    <button class="engine-btn" onclick="openEngine('cocktails')">
+                        <span>Cocktails</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pasta Dough Calculator Page -->
+        <div class="page" id="pastaDoughPage">
+            <header class="header header-with-back">
+                <div class="header-left">
+                    <button class="back-btn" onclick="goBackToMain()">
+                        ← Back
+                    </button>
+                    <div>
+                        <h1 class="greeting" style="margin-bottom: 0; font-size: 1.5rem;">Pasta Dough Calculator</h1>
+                    </div>
+                </div>
+                <button class="close-btn" onclick="goBack()">← Main</button>
+            </header>
+
+            <!-- Usage Section -->
+            <div class="calculator-section">
+                <h2 class="section-title">
+                    <span>🎯</span>
+                    Intended Usage
+                </h2>
+                <div class="usage-section">
+                    <div class="usage-label">What will you be making with this pasta?</div>
+                    <input type="text" class="usage-input" id="usageInput" placeholder="e.g., Fettuccine Alfredo, Ravioli with ricotta, Cacio e Pepe...">
+                    
+                    <div class="usage-label">Number of servings:</div>
+                    <div class="servings-slider-container">
+                        <input type="range" min="1" max="8" value="4" class="servings-slider" id="servingsSlider" oninput="updateServings(this.value)">
+                        <div class="slider-labels">
+                            <span>1</span>
+                            <span>2</span>
+                            <span>3</span>
+                            <span>4</span>
+                            <span>5</span>
+                            <span>6</span>
+                            <span>7</span>
+                            <span>8</span>
+                        </div>
+                        <div class="servings-display" id="servingsDisplay">4 servings</div>
+                    </div>
+
+                    <div class="hydration-section">
+                        <div class="hydration-controls">
+                            <div class="usage-label">Hydration Level:</div>
+                            <button class="auto-hydration-btn active" id="autoHydrationBtn" onclick="toggleAutoHydration()">
+                                🤖 Auto
+                            </button>
+                        </div>
+                        <div class="hydration-status" id="hydrationStatus">
+                            Auto-set based on your pasta type and usage
+                        </div>
+                        <div class="hydration-slider-container">
+                            <div class="hydration-track">
+                                <div class="hydration-ranges">
+                                    <div class="hydration-range range-red" style="width: 20%;"></div>
+                                    <div class="hydration-range range-yellow" style="width: 15%;"></div>
+                                    <div class="hydration-range range-green" style="width: 30%;"></div>
+                                    <div class="hydration-range range-yellow" style="width: 15%;"></div>
+                                    <div class="hydration-range range-red" style="width: 20%;"></div>
+                                </div>
+                                <input type="range" min="50" max="80" value="65" class="hydration-slider" id="hydrationSlider" oninput="updateHydration(this.value)">
+                            </div>
+                            <div class="hydration-display" id="hydrationDisplay">65% hydration</div>
+                        </div>
+                        
+                        <div class="hydration-info">
+                            <div class="hydration-info-title">
+                                <span>💧</span>
+                                Hydration Guide
+                            </div>
+                            <strong>50-60%:</strong> Firm, traditional pasta. Good for hearty sauces.<br>
+                            <strong>60-70%:</strong> Optimal range. Balanced texture and workability.<br>
+                            <strong>70-80%:</strong> Silky, delicate pasta. Perfect for light sauces.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liquid Component -->
+            <div class="calculator-section">
+                <h2 class="section-title">
+                    <span>🥚</span>
+                    Main Liquid Component
+                </h2>
+                <div class="option-grid" id="liquidOptions">
+                    <div class="option-card" onclick="selectOption('liquid', 'whole-egg')" data-option="whole-egg">
+                        <div class="option-title">Whole Egg</div>
+                        <div class="option-description">Classic choice for most pasta types. Provides structure and rich flavor.</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption('liquid', 'egg-yolk')" data-option="egg-yolk">
+                        <div class="option-title">Egg Yolk</div>
+                        <div class="option-description">Silky, rich pasta perfect for cream sauces. Higher fat content.</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption('liquid', 'egg-extra-yolk')" data-option="egg-extra-yolk">
+                        <div class="option-title">Whole Egg + Extra Yolks</div>
+                        <div class="option-description">Premium pasta with exceptional richness and golden color.</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption('liquid', 'liquid-based')" data-option="liquid-based">
+                        <div class="option-title">Liquid Based</div>
+                        <div class="option-description">Water or other liquids. For specific dietary needs or traditional styles.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dry Component -->
+            <div class="calculator-section">
+                <h2 class="section-title">
+                    <span>🌾</span>
+                    Main Dry Component
+                </h2>
+                <div class="option-grid" id="dryOptions">
+                    <div class="option-card" onclick="selectOption('dry', '00-flour')" data-option="00-flour">
+                        <div class="option-title">00 Flour</div>
+                        <div class="option-description">Fine Italian flour. Creates silky, smooth pasta perfect for filled shapes.</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption('dry', 'semolina')" data-option="semolina">
+                        <div class="option-title">Semolina</div>
+                        <div class="option-description">Durum wheat flour. Firm texture ideal for hearty shapes and sauces.</div>
+                    </div>
+                    <div class="option-card" onclick="selectOption('dry', 'mixture')" data-option="mixture">
+                        <div class="option-title">Mixture</div>
+                        <div class="option-description">Blend of 00 and semolina. Balances texture and workability.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Components -->
+            <div class="calculator-section">
+                <h2 class="section-title">
+                    <span>➕</span>
+                    Additional Components (Optional)
+                </h2>
+                <div class="option-grid" id="additionalOptions">
+                    <div class="option-card" onclick="toggleOption('additional', 'fat')" data-option="fat">
+                        <div class="option-title">Fat (Olive Oil)</div>
+                        <div class="option-description">Adds richness and helps prevent sticking during processing.</div>
+                    </div>
+                    <div class="option-card" onclick="toggleOption('additional', 'seasoning')" data-option="seasoning">
+                        <div class="option-title">Seasoning (Salt)</div>
+                        <div class="option-description">Enhances flavor throughout the pasta dough.</div>
+                    </div>
+                    <div class="option-card" onclick="toggleOption('additional', 'flavor')" data-option="flavor">
+                        <div class="option-title">Flavor Concentrates</div>
+                        <div class="option-description">Spinach, herbs, or natural colorings. Replaces equivalent liquid weight.</div>
+                    </div>
+                    <div class="option-card" onclick="toggleOption('additional', 'dairy')" data-option="dairy">
+                        <div class="option-title">Dairy</div>
+                        <div class="option-description">Cheese or cream for enhanced richness and flavor.</div>
+                    </div>
+                </div>
+
+                <!-- Flavor Concentrate Slider (hidden by default) -->
+                <div class="flavor-concentrate-section" id="flavorConcentrateSection" style="display: none;">
+                    <div class="usage-label">Flavor Concentrate Amount:</div>
+                    <div class="servings-slider-container">
+                        <input type="range" min="5" max="25" value="15" class="servings-slider" id="flavorSlider" oninput="updateFlavorAmount(this.value)">
+                        <div class="slider-labels">
+                            <span>5g</span>
+                            <span>10g</span>
+                            <span>15g</span>
+                            <span>20g</span>
+                            <span>25g</span>
+                        </div>
+                        <div class="servings-display" id="flavorDisplay">15g per serving</div>
+                    </div>
+                    <div class="hydration-info">
+                        <div class="hydration-info-title">
+                            <span>🎨</span>
+                            Flavor Guide
+                        </div>
+                        <strong>5-10g:</strong> Subtle color and flavor enhancement.<br>
+                        <strong>10-15g:</strong> Noticeable flavor with good color.<br>
+                        <strong>15-25g:</strong> Bold flavor and vibrant color.
+                    </div>
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateRecipe()">Calculate Perfect Recipe</button>
+
+            <!-- Recipe Output -->
+            <div class="recipe-output" id="recipeOutput">
+                <div class="recipe-title">Your Custom Pasta Dough Recipe</div>
+                <div class="ingredients-list" id="ingredientsList">
+                    <!-- Ingredients will be populated here -->
+                </div>
+                <div class="technique-notes">
+                    <div class="technique-title">Technique Notes:</div>
+                    <div class="technique-text" id="techniqueText">
+                        <!-- Technique notes will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedOptions = {
+            liquid: null,
+            dry: null,
+            additional: [],
+            servings: 4,
+            hydration: 65,
+            autoHydration: true,
+            flavorAmount: 15
+        };
+
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+       function goBack() {
+    window.location.href = 'Home page mockup.html';
+}
+
+        function openEngine(engineType) {
+            console.log('Opening engine:', engineType);
+            alert(`${engineType} calculator coming soon!`);
+        }
+
+        function openPastaDough() {
+            document.getElementById('mainPage').classList.remove('active');
+            document.getElementById('pastaDoughPage').classList.add('active');
+            console.log('Opening pasta dough calculator');
+        }
+
+        function goBackToMain() {
+            document.getElementById('pastaDoughPage').classList.remove('active');
+            document.getElementById('mainPage').classList.add('active');
+        }
+
+        function updateServings(value) {
+            selectedOptions.servings = parseInt(value);
+            document.getElementById('servingsDisplay').textContent = `${value} serving${value > 1 ? 's' : ''}`;
+            
+            if (selectedOptions.autoHydration) {
+                updateAutoHydration();
+            }
+        }
+
+        function updateHydration(value) {
+            selectedOptions.hydration = parseInt(value);
+            document.getElementById('hydrationDisplay').textContent = `${value}% hydration`;
+            
+            if (selectedOptions.autoHydration) {
+                selectedOptions.autoHydration = false;
+                document.getElementById('autoHydrationBtn').classList.remove('active');
+                document.getElementById('hydrationStatus').textContent = 'Manually adjusted - click Auto to reset';
+            }
+        }
+
+        function toggleAutoHydration() {
+            selectedOptions.autoHydration = !selectedOptions.autoHydration;
+            const btn = document.getElementById('autoHydrationBtn');
+            const status = document.getElementById('hydrationStatus');
+            
+            if (selectedOptions.autoHydration) {
+                btn.classList.add('active');
+                status.textContent = 'Auto-set based on your pasta type and usage';
+                updateAutoHydration();
+            } else {
+                btn.classList.remove('active');
+                status.textContent = 'Manual mode - adjust slider to your preference';
+            }
+        }
+
+        function updateAutoHydration() {
+            if (!selectedOptions.autoHydration) return;
+            
+            const usage = document.getElementById('usageInput').value.toLowerCase();
+            let autoHydration = 65;
+            
+            if (usage.includes('ravioli') || usage.includes('tortellini') || usage.includes('filled')) {
+                autoHydration = 60;
+            } else if (usage.includes('fettuccine') || usage.includes('tagliatelle') || usage.includes('ribbon')) {
+                autoHydration = 68;
+            } else if (usage.includes('gnocchi')) {
+                autoHydration = 55;
+            } else if (usage.includes('lasagna') || usage.includes('sheet')) {
+                autoHydration = 62;
+            } else if (usage.includes('delicate') || usage.includes('light sauce')) {
+                autoHydration = 70;
+            } else if (usage.includes('hearty') || usage.includes('bolognese') || usage.includes('ragu')) {
+                autoHydration = 58;
+            }
+            
+            if (selectedOptions.liquid === 'egg-yolk' || selectedOptions.liquid === 'egg-extra-yolk') {
+                autoHydration -= 3;
+            } else if (selectedOptions.liquid === 'liquid-based') {
+                autoHydration += 2;
+            }
+            
+            if (selectedOptions.dry === 'semolina') {
+                autoHydration += 3;
+            }
+            
+            autoHydration = Math.max(50, Math.min(80, autoHydration));
+            
+            selectedOptions.hydration = autoHydration;
+            document.getElementById('hydrationSlider').value = autoHydration;
+            document.getElementById('hydrationDisplay').textContent = `${autoHydration}% hydration`;
+        }
+
+        function selectOption(category, option) {
+            selectedOptions[category] = option;
+            
+            // Remove previous selections in this category
+            document.querySelectorAll(`#${category}Options .option-card`).forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Find the correct card element and add selection
+            const targetCard = document.querySelector(`#${category}Options .option-card[data-option="${option}"]`);
+            if (targetCard) {
+                targetCard.classList.add('selected');
+            }
+            
+            if (selectedOptions.autoHydration) {
+                updateAutoHydration();
+            }
+            
+            console.log('Selected', category, ':', option);
+        }
+
+        function updateFlavorAmount(value) {
+            selectedOptions.flavorAmount = parseInt(value);
+            document.getElementById('flavorDisplay').textContent = `${value}g per serving`;
+        }
+
+        function toggleOption(category, option) {
+            if (!selectedOptions[category]) {
+                selectedOptions[category] = [];
+            }
+            
+            const targetCard = document.querySelector(`#${category}Options .option-card[data-option="${option}"]`);
+            const index = selectedOptions[category].indexOf(option);
+            
+            if (index > -1) {
+                selectedOptions[category].splice(index, 1);
+                if (targetCard) {
+                    targetCard.classList.remove('selected');
+                }
+                
+                // Hide flavor concentrate slider when deselected
+                if (option === 'flavor') {
+                    document.getElementById('flavorConcentrateSection').style.display = 'none';
+                }
+            } else {
+                selectedOptions[category].push(option);
+                if (targetCard) {
+                    targetCard.classList.add('selected');
+                }
+                
+                // Show flavor concentrate slider when selected
+                if (option === 'flavor') {
+                    document.getElementById('flavorConcentrateSection').style.display = 'block';
+                }
+            }
+            
+            console.log('Toggled', category, ':', selectedOptions[category]);
+        }
+
+        function calculateRecipe() {
+            const usage = document.getElementById('usageInput').value;
+            const servings = selectedOptions.servings;
+            const hydration = selectedOptions.hydration;
+            
+            if (!selectedOptions.liquid || !selectedOptions.dry) {
+                alert('Please select both liquid and dry components');
+                return;
+            }
+
+            const baseFlour = 100 * servings;
+            const flavorWeight = selectedOptions.additional.includes('flavor') ? selectedOptions.flavorAmount * servings : 0;
+            
+            const recipes = {
+                'whole-egg': { 
+                    eggs: Math.ceil(servings / 2), 
+                    flour: baseFlour,
+                    liquidWeight: Math.ceil(servings / 2) * 50 - flavorWeight
+                },
+                'egg-yolk': { 
+                    yolks: servings * 2, 
+                    flour: baseFlour * 0.9,
+                    liquidWeight: servings * 2 * 17 - flavorWeight
+                },
+                'egg-extra-yolk': { 
+                    eggs: Math.ceil(servings / 2), 
+                    yolks: servings, 
+                    flour: baseFlour * 1.1,
+                    liquidWeight: (Math.ceil(servings / 2) * 50) + (servings * 17) - flavorWeight
+                },
+                'liquid-based': { 
+                    water: Math.round(baseFlour * (hydration / 100)) - flavorWeight, 
+                    flour: baseFlour,
+                    liquidWeight: Math.round(baseFlour * (hydration / 100)) - flavorWeight
+                }
+            };
+
+            const recipe = recipes[selectedOptions.liquid];
+            
+            let ingredientsHTML = '';
+            
+            if (selectedOptions.dry === '00-flour') {
+                ingredientsHTML += `<div class="ingredient-item"><span class="ingredient-name">00 Flour</span><span class="ingredient-amount">${recipe.flour}g</span></div>`;
+            } else if (selectedOptions.dry === 'semolina') {
+                ingredientsHTML += `<div class="ingredient-item"><span class="ingredient-name">Semolina Flour</span><span class="ingredient-amount">${recipe.flour}g</span></div>`;
+            } else {
+                ingredientsHTML += `<div class="ingredient-item"><span class="ingredient-name">00 Flour</span><span class="ingredient-amount">${Math.round(recipe.flour * 0.7)}g</span></div>`;
+                ingredientsHTML += `<div class="ingredient-item"><span class="ingredient-name">Semolina Flour</span><span class="ingredient-amount">${Math.round(recipe.flour * 0.3)}g</span></div>`;
+            }
+
+            if (recipe.eggs) {
+                ingredientsHTML += `<div class="ingredient-item"><span class="ingredient-name">Large Eggs</span><span class="ingredient-amount">${recipe.eggs} (${recipe.eggs * 50}g)</span></div>`;
+            }
+            if (recipe.yolks) {
+                ingredientsHTML += `<div class="ingredient-item"><span class="ingredient-name">Egg Yolks</span><span class="ingredient-amount">${recipe.yolks} (${recipe.yolks * 17}g)</span></div>`;
+            }
+            if (recipe.water) {
+                ingredientsHTML += `<div class="ingredient-item"><span class="ingredient-name">Water</span><span class="ingredient-amount">${recipe.water}g</span></div>`;
+            }
+
+            if (selectedOptions.additional.includes('fat')) {
+                ingredientsHTML += `<div class="ingredient-item"><span class="ingredient-name">Extra Virgin Olive Oil</span><span class="ingredient-amount">${servings * 2}g</span></div>`;
+            }
+            if (selectedOptions.additional.includes('seasoning')) {
+                ingredientsHTML += `<div class="ingredient-item"><span class="ingredient-name">Fine Sea Salt</span><span class="ingredient-amount">${Math.round(recipe.flour * 0.015)}g</span></div>`;
+            }
+            if (selectedOptions.additional.includes('flavor')) {
+                const flavorWeight = selectedOptions.flavorAmount * servings;
+                ingredientsHTML += `<div class="ingredient-item"><span class="ingredient-name">Flavor Concentrate (spinach purée, etc.)</span><span class="ingredient-amount">${flavorWeight}g</span></div>`;
+            }
+            if (selectedOptions.additional.includes('dairy')) {
+                ingredientsHTML += `<div class="ingredient-item"><span class="ingredient-name">Parmigiano-Reggiano (grated)</span><span class="ingredient-amount">${servings * 5}g</span></div>`;
+            }
+
+            document.getElementById('ingredientsList').innerHTML = ingredientsHTML;
+
+            let techniqueText = '';
+            
+            if (selectedOptions.liquid === 'whole-egg') {
+                techniqueText = 'Create a well with flour, crack eggs in center. Gradually incorporate flour using a fork, then knead for 8-10 minutes until smooth and elastic.';
+            } else if (selectedOptions.liquid === 'egg-yolk') {
+                techniqueText = 'Mix yolks gently with flour to avoid overworking. The high fat content requires gentle handling. Knead just until combined, then rest for 30 minutes.';
+            } else if (selectedOptions.liquid === 'egg-extra-yolk') {
+                techniqueText = 'Combine whole eggs and yolks first, then incorporate into flour. This rich dough benefits from longer resting (45 minutes) to develop proper texture.';
+            } else {
+                techniqueText = 'Gradually add water to flour while mixing. Knead vigorously for 10-12 minutes as this dough requires more work to develop gluten without eggs.';
+            }
+
+            if (selectedOptions.autoHydration) {
+                techniqueText += ` Hydration automatically optimized for ${usage || 'your pasta type'}.`;
+            } else {
+                techniqueText += ` Using custom ${hydration}% hydration as manually set.`;
+            }
+
+            if (selectedOptions.dry === 'semolina') {
+                techniqueText += ' Semolina creates a firmer dough - knead thoroughly and allow extra resting time for proper hydration.';
+            } else if (selectedOptions.dry === 'mixture') {
+                techniqueText += ' The flour blend provides excellent workability while maintaining good texture and bite.';
+            }
+
+            if (hydration < 60) {
+                techniqueText += ' Lower hydration creates firm dough - perfect for hearty sauces but requires more kneading effort.';
+            } else if (hydration > 70) {
+                techniqueText += ' Higher hydration creates silky, delicate pasta - handle gently and work quickly to prevent sticking.';
+            }
+
+            if (usage.toLowerCase().includes('ravioli') || usage.toLowerCase().includes('filled')) {
+                techniqueText += ' For filled pasta: roll thin (setting 6-7 on machine) and work quickly to prevent drying.';
+            } else if (usage.toLowerCase().includes('fettuccine') || usage.toLowerCase().includes('tagliatelle')) {
+                techniqueText += ' For ribbon pasta: roll to medium thickness (setting 5-6) and dust well with semolina before cutting.';
+            }
+
+            document.getElementById('techniqueText').textContent = techniqueText;
+            document.getElementById('recipeOutput').classList.add('show');
+
+            console.log('Recipe calculated for:', usage, 'Servings:', servings, 'Hydration:', hydration + '%');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+            }
+
+            const categories = document.querySelectorAll('.engine-category');
+            categories.forEach((category, index) => {
+                category.style.opacity = '0';
+                category.style.transform = 'translateY(20px)';
+                category.style.animation = `fadeInUp 0.6s ease-out ${0.1 + index * 0.15}s forwards`;
+            });
+        });
+    </script>
+</body>
+</html>

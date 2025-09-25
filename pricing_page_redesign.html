@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="flavorcraft-navigation.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Plan - FlavorCraft</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #fafafa;
+            --bg-tertiary: #f5f5f5;
+            --border-subtle: #e5e7eb;
+            --border-default: #d1d5db;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --accent-purple: #6366f1;
+            --accent-purple-hover: #4f46e5;
+            --accent-orange: #f97316;
+            --accent-green: #10b981;
+            --surface-hover: #f9fafb;
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --gradient-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --border-subtle: #222222;
+            --border-default: #333333;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-tertiary: #666666;
+            --surface-hover: #1f1f1f;
+            --gradient-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--accent-purple);
+        }
+
+        .theme-icon {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover .theme-icon {
+            transform: rotate(180deg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header */
+        .header {
+            padding: 48px 0 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 48px;
+            position: relative;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 48px;
+            left: 0;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-btn:hover {
+            background-color: var(--surface-hover);
+            color: var(--text-primary);
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .greeting {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        /* Billing Toggle */
+        .billing-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .toggle-container {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 6px;
+            display: flex;
+            gap: 6px;
+        }
+
+        .toggle-btn {
+            background-color: transparent;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle-btn.active {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .savings-badge {
+            background-color: var(--accent-green);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Plans Grid */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .plan-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .plan-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.2s ease;
+        }
+
+        .plan-card:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--accent-purple);
+            transform: translateY(-2px);
+        }
+
+        .plan-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .plan-card.popular {
+            background: var(--gradient-subtle);
+            border-color: var(--accent-purple);
+            transform: scale(1.02);
+        }
+
+        .plan-card.popular::after {
+            content: 'Most Popular';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--accent-purple);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 0 0 8px 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .plan-card.popular:hover {
+            transform: scale(1.02) translateY(-2px);
+        }
+
+        .plan-card.premium {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(139, 92, 246, 0.03) 100%);
+            border-color: var(--border-default);
+        }
+
+        .plan-card.enterprise {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, rgba(139, 92, 246, 0.04) 100%);
+            border-color: var(--border-default);
+        }
+
+        .plan-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            margin-top: 8px;
+        }
+
+        .plan-target {
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 0.875rem;
+        }
+
+        .plan-price {
+            margin-bottom: 24px;
+        }
+
+        .price-amount {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .price-period {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .price-savings {
+            background-color: var(--accent-green);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 8px;
+            display: inline-block;
+        }
+
+        .plan-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 24px;
+        }
+
+        .feature-item {
+            padding: 6px 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.875rem;
+        }
+
+        .feature-icon {
+            color: var(--accent-green);
+            font-weight: 600;
+            margin-top: 1px;
+        }
+
+        .feature-text {
+            line-height: 1.4;
+        }
+
+        .feature-highlight {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .select-btn {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-default);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .select-btn:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        .select-btn.primary {
+            background-color: var(--accent-purple);
+            color: white;
+            border-color: var(--accent-purple);
+        }
+
+        .select-btn.primary:hover {
+            background-color: var(--accent-purple-hover);
+            border-color: var(--accent-purple-hover);
+        }
+
+        .contact-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+        }
+
+        .contact-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Sections */
+        .guarantee-section {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .guarantee-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .guarantee-text {
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .faq-section {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .faq-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .faq-item {
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 12px;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            font-size: 0.875rem;
+        }
+
+        .faq-answer {
+            color: var(--text-secondary);
+            line-height: 1.5;
+            font-size: 0.875rem;
+        }
+
+        .yearly-discount {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .yearly-discount.show {
+            opacity: 1;
+        }
+
+        .monthly-pricing {
+            transition: opacity 0.3s ease;
+        }
+
+        .monthly-pricing.hide {
+            opacity: 0.5;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .fade-in-stagger > * {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .fade-in-stagger > *:nth-child(1) { animation-delay: 0.1s; }
+        .fade-in-stagger > *:nth-child(2) { animation-delay: 0.2s; }
+        .fade-in-stagger > *:nth-child(3) { animation-delay: 0.3s; }
+        .fade-in-stagger > *:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .greeting {
+                font-size: 2rem;
+            }
+
+            .plans-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .plan-card.popular {
+                transform: none;
+            }
+
+            .plan-card.popular:hover {
+                transform: translateY(-2px);
+            }
+
+            .toggle-container {
+                flex-direction: column;
+                width: 100%;
+                max-width: 280px;
+                margin: 0 auto;
+            }
+
+            .back-btn {
+                position: static;
+                margin-bottom: 20px;
+                align-self: flex-start;
+            }
+
+            .header {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+        <svg class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>All plans available</span>
+            </div>
+            <button class="back-btn" onclick="goBack()">← Back</button>
+            <h1 class="greeting">Choose Your Plan</h1>
+            <p class="subtitle">Unlock the power of culinary intelligence</p>
+        </header>
+
+        <!-- Billing Toggle -->
+        <div class="billing-toggle">
+            <div class="toggle-container">
+                <button class="toggle-btn active" id="monthlyBtn" onclick="toggleBilling('monthly')">
+                    Monthly
+                </button>
+                <button class="toggle-btn" id="yearlyBtn" onclick="toggleBilling('yearly')">
+                    Yearly
+                    <span class="savings-badge">Save up to 50%</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Plans Grid -->
+        <div class="plans-grid fade-in-stagger">
+            <!-- Basic Plan -->
+            <div class="plan-card" onclick="selectPlan('basic')">
+                <div class="plan-name">Basic</div>
+                <div class="plan-target">for the average home cook</div>
+                <div class="plan-price">
+                    <div class="monthly-pricing">
+                        <div class="price-amount">$9.99</div>
+                        <div class="price-period">per month</div>
+                    </div>
+                    <div class="yearly-discount">
+                        <div class="price-amount">$59.99</div>
+                        <div class="price-period">per year</div>
+                        <div class="price-savings">50% off</div>
+                    </div>
+                </div>
+                <ul class="plan-features">
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><span class="feature-highlight">Food pairing engine</span> with molecular compatibility</span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Custom and general <span class="feature-highlight">palette matching</span></span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Basic ingredient substitutions</span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Access to tutorials library</span>
+                    </li>
+                </ul>
+                <button class="select-btn" onclick="selectPlan('basic')">Get Started</button>
+            </div>
+
+            <!-- Advanced Plan -->
+            <div class="plan-card popular" onclick="selectPlan('advanced')">
+                <div class="plan-name">Advanced</div>
+                <div class="plan-target">for the serious home cook</div>
+                <div class="plan-price">
+                    <div class="monthly-pricing">
+                        <div class="price-amount">$19.99</div>
+                        <div class="price-period">per month</div>
+                    </div>
+                    <div class="yearly-discount">
+                        <div class="price-amount">$179.99</div>
+                        <div class="price-period">per year</div>
+                        <div class="price-savings">25% off</div>
+                    </div>
+                </div>
+                <ul class="plan-features">
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><span class="feature-highlight">All Basic features</span></span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><span class="feature-highlight">Dish Creation Engine</span> with full framework</span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><span class="feature-highlight">Bespoke Engines</span> for precise ratios</span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Advanced flavor balancing</span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><span class="feature-highlight">5 generations per week</span></span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Recipe saving and editing</span>
+                    </li>
+                </ul>
+                <button class="select-btn primary" onclick="selectPlan('advanced')">Start Free Trial</button>
+            </div>
+
+            <!-- Professional Plan -->
+            <div class="plan-card premium" onclick="selectPlan('professional')">
+                <div class="plan-name">Professional</div>
+                <div class="plan-target">for professional cooks and restaurants</div>
+                <div class="plan-price">
+                    <div class="monthly-pricing">
+                        <div class="price-amount">$150</div>
+                        <div class="price-period">per month</div>
+                    </div>
+                    <div class="yearly-discount">
+                        <div class="price-amount">$1,499</div>
+                        <div class="price-period">per year</div>
+                        <div class="price-savings">17% off</div>
+                    </div>
+                </div>
+                <ul class="plan-features">
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><span class="feature-highlight">All Advanced features</span></span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><span class="feature-highlight">Unlimited generations</span></span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Refined palette customization</span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Professional techniques library</span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Menu planning tools</span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Priority support</span>
+                    </li>
+                </ul>
+                <button class="select-btn" onclick="selectPlan('professional')">Start 3-Day Trial</button>
+            </div>
+
+            <!-- Bespoke Plan -->
+            <div class="plan-card enterprise" onclick="contactUs()">
+                <div class="plan-name">Bespoke</div>
+                <div class="plan-target">for restaurant chains and culinary institutions</div>
+                <div class="plan-price">
+                    <div class="price-amount">Custom</div>
+                    <div class="price-period">pricing</div>
+                </div>
+                <ul class="plan-features">
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><span class="feature-highlight">Everything in Professional</span></span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Multi-location support</span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Custom AI model training</span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">White-label integration</span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Dedicated support team</span>
+                    </li>
+                    <li class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Custom deployment options</span>
+                    </li>
+                </ul>
+                <button class="select-btn contact-btn" onclick="contactUs()">Contact</button>
+            </div>
+        </div>
+
+        <!-- Guarantee Section -->
+        <div class="guarantee-section">
+            <div class="guarantee-title">30-Day Money-Back Guarantee</div>
+            <div class="guarantee-text">
+                Try Culinary Intelligence risk-free. If you're not completely satisfied within 30 days, we'll refund your money, no questions asked.
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section">
+            <div class="faq-title">Frequently Asked Questions</div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Can I upgrade or downgrade my plan anytime?</div>
+                <div class="faq-answer">Yes, you can change your plan at any time. Upgrades take effect immediately, and downgrades take effect at your next billing cycle.</div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">What payment methods do you accept?</div>
+                <div class="faq-answer">We accept all major credit cards, PayPal, and bank transfers for annual plans. All payments are processed securely.</div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Is there a free trial available?</div>
+                <div class="faq-answer">Yes, we offer a 3-day free trial for the Professional plan so you can experience the full power of Culinary Intelligence before committing.</div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">What happens to my recipes if I cancel?</div>
+                <div class="faq-answer">You can export all your saved recipes at any time, even after cancellation. We recommend downloading your recipes before your subscription ends.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentBilling = 'monthly';
+
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+
+        function toggleBilling(type) {
+            currentBilling = type;
+            
+            // Update button states
+            document.getElementById('monthlyBtn').classList.toggle('active', type === 'monthly');
+            document.getElementById('yearlyBtn').classList.toggle('active', type === 'yearly');
+            
+            // Update pricing display
+            const monthlyPricing = document.querySelectorAll('.monthly-pricing');
+            const yearlyDiscounts = document.querySelectorAll('.yearly-discount');
+            
+            if (type === 'yearly') {
+                monthlyPricing.forEach(el => el.classList.add('hide'));
+                yearlyDiscounts.forEach(el => el.classList.add('show'));
+            } else {
+                monthlyPricing.forEach(el => el.classList.remove('hide'));
+                yearlyDiscounts.forEach(el => el.classList.remove('show'));
+            }
+            
+            console.log(`Switched to ${type} billing`);
+        }
+
+        function selectPlan(planType) {
+            console.log(`Selected ${planType} plan with ${currentBilling} billing`);
+            
+            // Add visual feedback
+            const allCards = document.querySelectorAll('.plan-card');
+            allCards.forEach(card => {
+                card.style.transform += ' scale(0.98)';
+                setTimeout(() => {
+                    card.style.transform = card.style.transform.replace(' scale(0.98)', '');
+                }, 150);
+            });
+            
+            // In a real app, this would redirect to payment processing
+            let trialText = planType === 'professional' ? ' (with 3-day trial)' : '';
+            alert(`Proceeding to checkout for ${planType} plan (${currentBilling} billing)${trialText}`);
+        }
+
+        function contactUs() {
+            console.log('Opening contact form');
+            alert('Contact form would open here - schedule a demo and discuss custom pricing');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+            }
+
+            // Add entrance animations
+            const cards = document.querySelectorAll('.plan-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${0.1 + index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adjust Balance - FlavorCraft</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #fafafa;
+            --bg-tertiary: #f5f5f5;
+            --border-subtle: #e5e7eb;
+            --border-default: #d1d5db;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --accent-purple: #6366f1;
+            --accent-purple-hover: #4f46e5;
+            --accent-orange: #f97316;
+            --accent-green: #10b981;
+            --surface-hover: #f9fafb;
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --gradient-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --border-subtle: #222222;
+            --border-default: #333333;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-tertiary: #666666;
+            --surface-hover: #1f1f1f;
+            --gradient-subtle: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--accent-purple);
+        }
+
+        .theme-icon {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover .theme-icon {
+            transform: rotate(180deg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header */
+        .header {
+            padding: 48px 0 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 48px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 48px;
+            right: 0;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .close-btn:hover {
+            background-color: var(--surface-hover);
+            color: var(--text-primary);
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        .greeting {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        /* Status indicator */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Mode Toggle */
+        .mode-section {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            animation: slideInLeft 0.6s ease-out 0.1s both;
+        }
+
+        .mode-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .mode-btn {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-default);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-btn.active {
+            background: var(--gradient-subtle);
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .mode-btn:hover {
+            background-color: var(--surface-hover);
+            color: var(--text-primary);
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        .mode-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Dropdown Controls */
+        .dropdown-controls {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .dropdown-container {
+            position: relative;
+            min-width: 180px;
+        }
+
+        .dropdown {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-default);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--border-default);
+        }
+
+        .dropdown:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        /* Personal Palette Section */
+        .personal-palette {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background: var(--gradient-subtle);
+            border-radius: 8px;
+        }
+
+        .palette-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .palette-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .palette-btn {
+            background-color: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .palette-btn:hover {
+            background-color: var(--accent-purple-hover);
+            transform: translateY(-1px);
+        }
+
+        /* Balance Controls */
+        .balance-section {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            animation: slideInRight 0.6s ease-out 0.2s both;
+        }
+
+        .balance-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .balance-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .balance-item {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .balance-item:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--border-default);
+        }
+
+        .balance-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .slider-container {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .slider-track {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            background-color: var(--bg-tertiary);
+        }
+
+        .slider-ranges {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+
+        .range-section {
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .range-red {
+            background-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .range-yellow {
+            background-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .range-green {
+            background-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .balance-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: transparent;
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .balance-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--accent-purple);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .balance-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .balance-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--accent-purple);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        .current-value {
+            text-align: center;
+            margin-top: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Example Section */
+        .example-section {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 20px;
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        .example-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .example-text {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .greeting {
+                font-size: 2rem;
+            }
+
+            .dropdown-controls {
+                flex-direction: column;
+            }
+
+            .mode-buttons {
+                justify-content: center;
+            }
+
+            .close-btn {
+                position: static;
+                margin-bottom: 20px;
+            }
+
+            .header {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+        <svg class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>Balance engine ready</span>
+            </div>
+            <button class="close-btn" onclick="goBack()">← Back</button>
+            <h1 class="greeting">Adjust Balance</h1>
+            <p class="subtitle">Fine-tune flavor profiles for perfect dishes</p>
+        </header>
+
+        <!-- Mode Selection -->
+        <div class="mode-section">
+            <h2 class="mode-title">Balance Mode</h2>
+            <div class="mode-buttons">
+                <button class="mode-btn active" onclick="toggleMode('presets')">Presets</button>
+                <button class="mode-btn" onclick="toggleMode('manual')">Manual</button>
+                <button class="mode-btn" onclick="toggleMode('personal')">Personal Palette</button>
+            </div>
+
+            <div class="dropdown-controls" id="dropdownControls">
+                <div class="dropdown-container">
+                    <select class="dropdown" onchange="selectPreset(this.value)">
+                        <option value="">Select Style</option>
+                        <option value="refined">Refined</option>
+                        <option value="classic">Classic</option>
+                    </select>
+                </div>
+                
+                <div class="dropdown-container">
+                    <select class="dropdown" onchange="selectCuisine()">
+                        <option value="">By Cuisine</option>
+                        <option value="italian">Italian</option>
+                        <option value="french">French</option>
+                        <option value="japanese">Japanese</option>
+                        <option value="indian">Indian</option>
+                        <option value="mexican">Mexican</option>
+                        <option value="thai">Thai</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="personal-palette" id="personalPalette">
+                <div class="palette-title">Your Personal Flavor Profile</div>
+                <div class="palette-subtitle">Based on your preferences and cooking history</div>
+                <button class="palette-btn" onclick="adjustPersonalPalette()">
+                    Adjust Your Personal Palette
+                </button>
+            </div>
+        </div>
+
+        <!-- Balance Controls -->
+        <div class="balance-section">
+            <h2 class="balance-title">Flavor Balance Controls</h2>
+            <div class="balance-grid">
+                <div class="balance-item">
+                    <div class="balance-label">Salt</div>
+                    <div class="slider-container">
+                        <div class="slider-track">
+                            <div class="slider-ranges">
+                                <div class="range-section range-red" style="width: 20%;"></div>
+                                <div class="range-section range-yellow" style="width: 15%;"></div>
+                                <div class="range-section range-green" style="width: 30%;"></div>
+                                <div class="range-section range-yellow" style="width: 15%;"></div>
+                                <div class="range-section range-red" style="width: 20%;"></div>
+                            </div>
+                            <input type="range" min="0" max="100" value="50" class="balance-slider" id="saltSlider" oninput="updateValue('salt', this.value)">
+                        </div>
+                        <div class="slider-labels">
+                            <span>Low</span>
+                            <span>Med</span>
+                            <span>High</span>
+                        </div>
+                        <div class="current-value" id="saltValue">Medium</div>
+                    </div>
+                </div>
+
+                <div class="balance-item">
+                    <div class="balance-label">Sweet</div>
+                    <div class="slider-container">
+                        <div class="slider-track">
+                            <div class="slider-ranges">
+                                <div class="range-section range-red" style="width: 25%;"></div>
+                                <div class="range-section range-yellow" style="width: 15%;"></div>
+                                <div class="range-section range-green" style="width: 20%;"></div>
+                                <div class="range-section range-yellow" style="width: 15%;"></div>
+                                <div class="range-section range-red" style="width: 25%;"></div>
+                            </div>
+                            <input type="range" min="0" max="100" value="40" class="balance-slider" id="sweetSlider" oninput="updateValue('sweet', this.value)">
+                        </div>
+                        <div class="slider-labels">
+                            <span>Low</span>
+                            <span>Med</span>
+                            <span>High</span>
+                        </div>
+                        <div class="current-value" id="sweetValue">Medium-Low</div>
+                    </div>
+                </div>
+
+                <div class="balance-item">
+                    <div class="balance-label">Acid</div>
+                    <div class="slider-container">
+                        <div class="slider-track">
+                            <div class="slider-ranges">
+                                <div class="range-section range-red" style="width: 15%;"></div>
+                                <div class="range-section range-yellow" style="width: 20%;"></div>
+                                <div class="range-section range-green" style="width: 30%;"></div>
+                                <div class="range-section range-yellow" style="width: 20%;"></div>
+                                <div class="range-section range-red" style="width: 15%;"></div>
+                            </div>
+                            <input type="range" min="0" max="100" value="60" class="balance-slider" id="acidSlider" oninput="updateValue('acid', this.value)">
+                        </div>
+                        <div class="slider-labels">
+                            <span>Low</span>
+                            <span>Med</span>
+                            <span>High</span>
+                        </div>
+                        <div class="current-value" id="acidValue">Medium-High</div>
+                    </div>
+                </div>
+
+                <div class="balance-item">
+                    <div class="balance-label">Bitter</div>
+                    <div class="slider-container">
+                        <div class="slider-track">
+                            <div class="slider-ranges">
+                                <div class="range-section range-red" style="width: 30%;"></div>
+                                <div class="range-section range-yellow" style="width: 20%;"></div>
+                                <div class="range-section range-green" style="width: 20%;"></div>
+                                <div class="range-section range-yellow" style="width: 15%;"></div>
+                                <div class="range-section range-red" style="width: 15%;"></div>
+                            </div>
+                            <input type="range" min="0" max="100" value="25" class="balance-slider" id="bitterSlider" oninput="updateValue('bitter', this.value)">
+                        </div>
+                        <div class="slider-labels">
+                            <span>Low</span>
+                            <span>Med</span>
+                            <span>High</span>
+                        </div>
+                        <div class="current-value" id="bitterValue">Low-Med</div>
+                    </div>
+                </div>
+
+                <div class="balance-item">
+                    <div class="balance-label">Spice</div>
+                    <div class="slider-container">
+                        <div class="slider-track">
+                            <div class="slider-ranges">
+                                <div class="range-section range-red" style="width: 10%;"></div>
+                                <div class="range-section range-yellow" style="width: 15%;"></div>
+                                <div class="range-section range-green" style="width: 50%;"></div>
+                                <div class="range-section range-yellow" style="width: 15%;"></div>
+                                <div class="range-section range-red" style="width: 10%;"></div>
+                            </div>
+                            <input type="range" min="0" max="100" value="45" class="balance-slider" id="spiceSlider" oninput="updateValue('spice', this.value)">
+                        </div>
+                        <div class="slider-labels">
+                            <span>Low</span>
+                            <span>Med</span>
+                            <span>High</span>
+                        </div>
+                        <div class="current-value" id="spiceValue">Medium</div>
+                    </div>
+                </div>
+
+                <div class="balance-item">
+                    <div class="balance-label">Umami</div>
+                    <div class="slider-container">
+                        <div class="slider-track">
+                            <div class="slider-ranges">
+                                <div class="range-section range-red" style="width: 20%;"></div>
+                                <div class="range-section range-yellow" style="width: 15%;"></div>
+                                <div class="range-section range-green" style="width: 30%;"></div>
+                                <div class="range-section range-yellow" style="width: 15%;"></div>
+                                <div class="range-section range-red" style="width: 20%;"></div>
+                            </div>
+                            <input type="range" min="0" max="100" value="65" class="balance-slider" id="umamiSlider" oninput="updateValue('umami', this.value)">
+                        </div>
+                        <div class="slider-labels">
+                            <span>Low</span>
+                            <span>Med</span>
+                            <span>High</span>
+                        </div>
+                        <div class="current-value" id="umamiValue">Medium-High</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example Section -->
+        <div class="example-section">
+            <div class="example-title">Example Usage</div>
+            <div class="example-text">
+                Available when creating any dish - This tool helps you achieve perfect flavor balance by adjusting key taste components. The colored zones show optimal ranges: green for ideal, yellow for acceptable, and red for potentially problematic levels.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function goBack() {
+    window.location.href = 'Home page mockup.html';
+}
+
+        function toggleMode(mode) {
+            const buttons = document.querySelectorAll('.mode-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            
+            const dropdownControls = document.getElementById('dropdownControls');
+            const personalPalette = document.getElementById('personalPalette');
+            const balanceSection = document.querySelector('.balance-section');
+            
+            if (mode === 'presets') {
+                dropdownControls.style.display = 'flex';
+                personalPalette.style.display = 'none';
+                balanceSection.style.opacity = '0.6';
+                balanceSection.style.pointerEvents = 'none';
+                
+            } else if (mode === 'manual') {
+                dropdownControls.style.display = 'none';
+                personalPalette.style.display = 'none';
+                balanceSection.style.opacity = '1';
+                balanceSection.style.pointerEvents = 'auto';
+                
+            } else if (mode === 'personal') {
+                dropdownControls.style.display = 'none';
+                personalPalette.style.display = 'block';
+                balanceSection.style.opacity = '0.6';
+                balanceSection.style.pointerEvents = 'none';
+                
+                applyPersonalPalette();
+            }
+            
+            console.log('Mode changed to:', mode);
+        }
+
+        function selectPreset(type) {
+            if (!type) return;
+            console.log('Preset selected:', type);
+            
+            if (type === 'refined') {
+                setSliderValues({ salt: 45, sweet: 30, acid: 55, bitter: 20, spice: 35, umami: 60 });
+            } else if (type === 'classic') {
+                setSliderValues({ salt: 55, sweet: 45, acid: 40, bitter: 25, spice: 40, umami: 50 });
+            }
+        }
+
+        function applyPersonalPalette() {
+            const personalProfile = { salt: 50, sweet: 40, acid: 50, bitter: 30, spice: 45, umami: 65 };
+            setSliderValues(personalProfile);
+            console.log('Applied personal palette');
+        }
+
+        function adjustPersonalPalette() {
+            console.log('Redirecting to personal palette setup page');
+            event.target.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                event.target.style.transform = 'scale(1)';
+            }, 150);
+        }
+
+        function selectCuisine() {
+            const cuisine = event.target.value;
+            console.log('Cuisine selected:', cuisine);
+            
+            const cuisineProfiles = {
+                italian: { salt: 50, sweet: 35, acid: 45, bitter: 20, spice: 30, umami: 65 },
+                french: { salt: 45, sweet: 25, acid: 40, bitter: 30, spice: 25, umami: 55 },
+                japanese: { salt: 40, sweet: 30, acid: 35, bitter: 15, spice: 20, umami: 75 },
+                indian: { salt: 55, sweet: 40, acid: 50, bitter: 35, spice: 70, umami: 45 },
+                mexican: { salt: 60, sweet: 35, acid: 55, bitter: 25, spice: 65, umami: 50 },
+                thai: { salt: 45, sweet: 50, acid: 60, bitter: 20, spice: 60, umami: 40 }
+            };
+            
+            if (cuisineProfiles[cuisine]) {
+                setSliderValues(cuisineProfiles[cuisine]);
+            }
+        }
+
+        function setSliderValues(values) {
+            Object.keys(values).forEach(flavor => {
+                const slider = document.getElementById(flavor + 'Slider');
+                if (slider) {
+                    slider.value = values[flavor];
+                    updateValue(flavor, values[flavor]);
+                }
+            });
+        }
+
+        function updateValue(flavor, value) {
+            const valueElement = document.getElementById(flavor + 'Value');
+            let description;
+            
+            if (value < 25) {
+                description = 'Low';
+            } else if (value < 40) {
+                description = 'Low-Med';
+            } else if (value < 60) {
+                description = 'Medium';
+            } else if (value < 75) {
+                description = 'Medium-High';
+            } else {
+                description = 'High';
+            }
+            
+            valueElement.textContent = description;
+            console.log(`${flavor} set to ${value} (${description})`);
+        }
+
+        // Initialize with proper mode settings
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+            }
+
+            // Start in presets mode
+            const dropdownControls = document.getElementById('dropdownControls');
+            const personalPalette = document.getElementById('personalPalette');
+            const balanceSection = document.querySelector('.balance-section');
+            
+            dropdownControls.style.display = 'flex';
+            personalPalette.style.display = 'none';
+            balanceSection.style.opacity = '0.6';
+            balanceSection.style.pointerEvents = 'none';
+            
+            // Add stagger animation to balance items
+            const items = document.querySelectorAll('.balance-item');
+            items.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                item.style.animation = `fadeInUp 0.6s ease-out ${0.1 + index * 0.1}s forwards`;
+            });
+        });
+    </script>
+</body>
+</html>
